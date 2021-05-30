@@ -425,7 +425,6 @@ function softwareDesk {
                 'gdm'                       # Login Manager
                 'gnome-tweaks'              # GNOME tweaking tool
                 'seahorse'                  # SSH/PGP management front-end
-                'chrome-gnome-shell'        # GNOME Shell integration (not for chrome only)
             )
             for PKG in "${PKGS[@]}"; do
             pacman -S ${PKG} --noconfirm --needed
@@ -475,6 +474,7 @@ function softwareDesk {
             'vscodium-bin'              # Binary VS Code without MS branding/telemetry
             'signal-desktop-beta-bin'   # Signal communication desktop client
             'scrcpy'                    # Android remot control tool
+            'chrome-gnome-shell'        # GNOME Shell integration (not for chrome only)
         )
         for PKG in "${PKGS[@]}"; do
         paru -S ${PKG} --noconfirm --needed

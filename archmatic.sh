@@ -383,6 +383,7 @@ function softwareDesk {
             # COMMUNICATION ----------------------------------------------------------------------
             'thunderbird'               # Mail Client
             'element-desktop'           # Matrix Client for Communication
+            'signal-desktop'            # Signal Desktop Client
 
             # OFFICE -----------------------------------------------------------------------------
             'libreoffice'                 # Office Suite

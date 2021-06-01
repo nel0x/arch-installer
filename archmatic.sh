@@ -124,6 +124,12 @@ function preinstall {
     echo -e "\nLaptop packages (wifi, bluetoth, etc.): [y/N]"
     read laptop
 
+    echo -e "\nBluetooth packages: [y/N]"
+    read -s bluetooth
+
+    echo -e "\nWi-Fi packages: [y/N]"
+    read -s wifi
+
     echo -e "\nSelect your CPU: [amd/intel/vbox]"
     read ucode
 
@@ -140,6 +146,8 @@ function preinstall {
     export de
     export swap
     export laptop
+    export bluetooth
+    export wifi
     export ucode
 }
 
@@ -431,26 +439,43 @@ function softwareDesk {
             pacman -S ${PKG} --noconfirm --needed
             done
         fi
-        
-        
-        ### Laptop packages
+
+        ### Laptop power management
             
         if [ "${laptop}" == "y" ]; then
             PKGS=(
-                # WIRELESS ---------------------------------------------------------------------------
-                'dialog'                    # Enables shell scripts to trigger dialog boxex
-                'wpa_supplicant'            # Key negotiation for WPA wireless networks
-                'wireless_tools'            # wireless tools
+                # OTHERS -----------------------------------------------------------------------------
+                'tlp'                       # Advanced laptop power management
+            )
+            for PKG in "${PKGS[@]}"; do
+            pacman -S ${PKG} --noconfirm --needed
+            done
+        fi
 
+        ### Bluetooth
+
+        if [ "${bluetooth}" == "y" ]; then
+            PKGS=(
                 # BLUETOOTH --------------------------------------------------------------------------
                 'bluez'                     # Daemons for the bluetooth protocol stack
                 'bluez-utils'               # Bluetooth development and debugging utilities
                 'bluez-firmware'            # Firmwares for Broadcom BCM203x and STLC2300 Bluetooth chips
                 'blueberry'                 # Bluetooth configuration tool
                 'pulseaudio-bluetooth'      # Bluetooth support for PulseAudio
+            )
+            for PKG in "${PKGS[@]}"; do
+            pacman -S ${PKG} --noconfirm --needed
+            done
+        fi
 
-                # OTHERS -----------------------------------------------------------------------------
-                'tlp'                       # Advanced laptop power management
+        ### Wi-Fi
+
+        if [ "${wifi}" == "y" ]; then
+            PKGS=(
+                # WIRELESS ---------------------------------------------------------------------------
+                'dialog'                    # Enables shell scripts to trigger dialog boxex
+                'wpa_supplicant'            # Key negotiation for WPA wireless networks
+                'wireless_tools'            # wireless tools
             )
             for PKG in "${PKGS[@]}"; do
             pacman -S ${PKG} --noconfirm --needed
@@ -495,7 +520,7 @@ function final {
             systemctl enable gdm
         fi
 
-        if [ "${laptop}" == "yes" ]; then
+        if [ "${bluetooth}" == "yes" ]; then
             systemctl enable bluetooth
         fi
 

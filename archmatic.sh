@@ -553,12 +553,15 @@ CHROOT
 }
 
 # call funtions
+function main() { 
+    preinstall
+    baseInstall
+    baseSetup
+    softwareDesk
+    final
+}
 
-preinstall
-baseInstall
-baseSetup
-softwareDesk
-final
+main
 
 umount -a
 echo -e "\nThe installation has finished. You can now boot into your system through \"reboot\"."

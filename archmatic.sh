@@ -364,6 +364,7 @@ function softwareDesk {
             'qbittorrent'               # Great Torrent Client
    
             # DEVELOPMENT ------------------------------------------------------------------------
+            'hugo'                      # Framework for creating light Webpages
             'clang'                     # C Lang compiler
             'cmake'                     # Cross-platform open-source make system
             'electron'                  # Cross-platform development using Javascript

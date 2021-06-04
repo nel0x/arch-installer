@@ -246,8 +246,9 @@ function baseSetup {
 
         # Set locales
         echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+        echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
         locale-gen
-        echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+        echo "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
 
         # Set time zone
         ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime

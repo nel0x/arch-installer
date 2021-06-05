@@ -18,7 +18,7 @@ ______________________________________________________________________________
 
 ## Troubleshooting Arch Linux
 
-[Arch Linux Installation Guide](https://gitlab.com/Nelox/Enrypted-Arch-Installation)
+[Arch Linux Installation Guide](https://gitlab.com/Nelox/encrypted-arch-installation)
 ______________________________________________________________________________
 
 ## License :scroll:

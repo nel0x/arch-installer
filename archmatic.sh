@@ -539,7 +539,7 @@ function final {
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
         # change shell to zsh
         sudo chsh -s /bin/zsh ${user}
-        # Install awesome terminl font from https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+        # Install awesome terminal font from https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
 
         # Clean orphans pkg
         if [[ ! -n $(sudo pacman -Qdt) ]]; then

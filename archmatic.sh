@@ -289,7 +289,7 @@ CHROOT
 function softwareDesk {
     arch-chroot /mnt /bin/bash <<"CHROOT"
 
-        ### Pacman packages
+        ### Official repo packages
         
         PKGS=(
             # XORG DISPLAY RENDERING -------------------------------------------------------------
@@ -459,7 +459,7 @@ function softwareDesk {
             done
         fi
 
-        ### AUR setup
+        ### AUR Set-up
             
         # Add sudo no-password privileges
         sed -i 's|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|' /etc/sudoers

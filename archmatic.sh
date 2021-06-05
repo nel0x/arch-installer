@@ -114,7 +114,7 @@ function preinstall {
         exit
     fi
 
-    echo -e "\nSelect Distro Environment: [gnome/kde/none]"
+    echo -e "\nInstall Desktop Environment: [gnome/none]"
     read de
 
     echo -e "\n8GB Swapfile: [y/N]"
@@ -402,31 +402,7 @@ function softwareDesk {
         done
             
             
-        ### Desktop Environment (Plasma or GNOME)
-            
-        if [ "${de}" == "kde" ]; then
-            PKGS=(
-                # Plasma -----------------------------------------------------------------------------
-                'plasma-meta'               # Desktop Environment
-                'kde-applications-meta'     # KDE Applications
-                'packagekit-qt5'            # Discover Back-end for standard arch repos
-                'xdg-user-dirs'             # Create user directories in Dolphin
-                'sddm'                      # Login Manager
-            )
-            for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
-            done
-
-            PKGS=(               
-                # Remove unnecessary packages, that came as dependencies
-                'kde-education-meta'
-                'kde-games-meta'
-                'kde-multimedia-meta'
-            )
-            for PKG in "${PKGS[@]}"; do
-            pacman -R ${PKG} --noconfirm --needed
-            done
-        fi
+        ### Desktop Environment
 
         if [ "${de}" == "gnome" ]; then
             PKGS=(
@@ -513,14 +489,11 @@ function final {
     arch-chroot /mnt /bin/bash <<"CHROOT"
 
         # Enable Login Manager
-        if [ "${de}" == "kde" ]; then
-            systemctl enable sddm
-        fi
-
         if [ "${de}" == "gnome" ]; then
             systemctl enable gdm
         fi
 
+        # Enable Bluetooth Service
         if [ "${bluetooth}" == "yes" ]; then
             systemctl enable bluetooth
         fi

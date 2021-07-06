@@ -124,10 +124,10 @@ function preinstall {
     read laptop
 
     echo -e "\nBluetooth packages: [y/N]"
-    read -s bluetooth
+    read bluetooth
 
     echo -e "\nWi-Fi packages: [y/N]"
-    read -s wifi
+    read wifi
 
     echo -e "\nSelect your CPU: [amd/intel/vbox]"
     read ucode

@@ -223,7 +223,7 @@ function baseInstall {
         sed -i -e 's|GRUB_TIMEOUT=5|GRUB_TIMEOUT=0|g' /etc/default/grub
 
         # ${disk_lvm_sed} is needed because of the slashes in ${disk_lvm}, that need to be escaped
-        sed -i -e "s|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=${disk_lvm_sed}=:vg0:allow-discards loglevel=3\"|g" /etc/default/grub
+        sed -i -e "s|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=${disk_lvm_sed}:vg0:allow-discards loglevel=3\"|g" /etc/default/grub
 
         # Enable encrypted boot
         sed -i -e 's|#GRUB_ENABLE_CRYPTODISK=y|GRUB_ENABLE_CRYPTODISK=y|g' /etc/default/grub

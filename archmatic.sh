@@ -538,5 +538,5 @@ function main() {
 main
 
 umount -a
-echo -e "\nThe installation has finished. You can now boot into your system."
+echo -e "\nThe installation has finished. You can now boot into your new system."
 exit

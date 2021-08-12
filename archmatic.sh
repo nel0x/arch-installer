@@ -393,6 +393,7 @@ function softwareDesk {
             'thunderbird'               # Mail Client
             'element-desktop'           # Matrix Client for Communication
             'signal-desktop'            # Signal Desktop Communication Client
+            'discord'                   # Not recommendable proprietary Communication System
 
             # OFFICE -----------------------------------------------------------------------------
             'libreoffice'                 # Office Suite

@@ -415,6 +415,14 @@ function softwareDesk {
             for PKG in "${PKGS[@]}"; do
             pacman -S ${PKG} --noconfirm --needed
             done
+
+            PKGS=(
+                # Remove unnecessary packages, that came as dependencies
+                'epiphany'                     # GNOME Browser
+            )
+            for PKG in "${PKGS[@]}"; do
+            pacman -S ${PKG} --noconfirm --needed
+            done
         fi
 
         ### Laptop power management

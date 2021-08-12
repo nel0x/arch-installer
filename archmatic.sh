@@ -392,7 +392,7 @@ function softwareDesk {
             # COMMUNICATION ----------------------------------------------------------------------
             'thunderbird'               # Mail Client
             'element-desktop'           # Matrix Client for Communication
-            'signal-desktop'            # Signal Desktop Client
+            'signal-desktop'            # Signal Desktop Communication Client
 
             # OFFICE -----------------------------------------------------------------------------
             'libreoffice'                 # Office Suite
@@ -483,9 +483,8 @@ function softwareDesk {
             'timeshift'                 # Backup programm
             'brave-bin'                 # Alternative chromium-based browser
             'vscodium-bin'              # Binary VS Code without MS branding/telemetry
-            'signal-desktop-beta-bin'   # Signal communication desktop client
             'scrcpy'                    # Android remot control tool
-            'chrome-gnome-shell'        # GNOME Shell integration (not for chrome only)
+            'chrome-gnome-shell'        # GNOME Shell integration (not for chrome browser only)
         )
         for PKG in "${PKGS[@]}"; do
         paru -S ${PKG} --noconfirm --needed

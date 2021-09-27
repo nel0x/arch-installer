@@ -177,7 +177,7 @@ function baseInstall {
 
     # Create LUKS encrypted lvm partition
     cryptsetup luksFormat -c aes-xts-plain64 -y -s 512 -h sha512 ${disk_lvm}
-    cryptsetup luksOpen $disk_lvm lvm
+    cryptsetup luksOpen ${disk_lvm} lvm
 
     # Set-up lvm
     pvcreate /dev/mapper/lvm

@@ -34,13 +34,12 @@ function preinstall {
     # Set-up mirrors for optimal download
     reflector --verbose --country 'Germany' -l 5 -p https --sort rate --save /etc/pacman.d/mirrorlist
 
-    # Set partitions (manually)
+    # EDIT: Set partitions (manually)
     disk="/dev/nvme0n1"
-    disk_boot="${disk}p1"
-    disk_esp="${disk}p2"
+    disk_esp="${disk}p1"
+    disk_boot="${disk}p2"
     disk_lvm="${disk}p3"
     disk_lvm_sed="\/dev\/nvme0n1p3"
-
 
     echo -e "\nSet hostname:"
     read hostname

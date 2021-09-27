@@ -35,7 +35,7 @@ function preinstall {
     reflector --verbose --country 'Germany' -l 5 -p https --sort rate --save /etc/pacman.d/mirrorlist
 
     # EDIT: Set partitions (manually)
-    disk="/dev/nvme0n1/"
+    disk="/dev/nvme0n1"
     disk_esp="${disk}p1"
     disk_boot="${disk}p2"
     disk_lvm="${disk}p3"

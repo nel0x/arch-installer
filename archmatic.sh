@@ -412,6 +412,7 @@ function softwareDesk {
                 # Plasma -----------------------------------------------------------------------------
                 'plasma-meta'               # Desktop Environment
                 'kde-applications-meta'     # KDE Applications
+                'plasma-wayland-session'    # Support for wayland session
                 'packagekit-qt5'            # Discover Back-end for standard arch repos
                 'xdg-user-dirs'             # Create user directories in Dolphin
                 'sddm'                      # Login Manager

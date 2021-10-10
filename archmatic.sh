@@ -309,7 +309,7 @@ function softwareDesk {
             'pipewire'                  # Temp: Pipewire Support
             'pipewire-alsa'             # Temp: Pipewire Support
             'pipewirde-pulse'           # Temp: Pipewire Support
-            'alsa-utils'               # Advanced Linux Sound Architecture (ALSA) Components https://alsa.opensrc.org/
+            'alsa-utils'                # Advanced Linux Sound Architecture (ALSA) Components https://alsa.opensrc.org/
             #'alsa-plugins'             # ALSA plugins
             #'pulseaudio'               # Pulse Audio sound components
             #'pulseaudio-alsa'          # ALSA configuration for pulse audio
@@ -322,7 +322,7 @@ function softwareDesk {
             'ghostscript'               # PostScript interpreter
             'gsfonts'                   # Adobe Postscript replacement fonts
             'hplip'                     # HP Drivers
-            'system-config-printer'      # Printer setup  utility
+            'system-config-printer'     # Printer setup  utility
 
             # TERMINAL UTILITIES -----------------------------------------------------------------
             'zsh'                       # ZSH shell

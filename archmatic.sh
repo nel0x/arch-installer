@@ -515,7 +515,6 @@ function softwareDesk {
             'brave-bin'                 # Alternative chromium-based browser
             'vscodium-bin'              # Binary VS Code without MS branding/telemetry
             'scrcpy'                    # Android remot control tool
-            'chrome-gnome-shell'        # GNOME Shell integration (not for chrome browser only)
         )
         for PKG in "${PKGS[@]}"; do
         paru -S ${PKG} --noconfirm --needed

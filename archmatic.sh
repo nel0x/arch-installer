@@ -292,7 +292,7 @@ function softwareDesk {
         ### Official repo packages
         
         PKGS=(
-            # XORG DISPLAY RENDERING -------------------------------------------------------------
+            # DISPLAY RENDERING -------------------------------------------------------------
             'xorg-drivers'              # Display Drivers
             'xorg-xlsclients'           # Temp: Wayland Support
             'xorg-xwayland'             # Temp: Wayland Support
@@ -384,6 +384,7 @@ function softwareDesk {
 
             # GRAPHICS AND DESIGN ----------------------------------------------------------------
             'gimp'                      # GNU Image Manipulation Program
+            'papirus-icon-theme'        # Papirus Icon Theme for KDE/GNOME
 
             # BROWSER ----------------------------------------------------------------------------
             'firefox'                    # Browser

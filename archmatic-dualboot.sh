@@ -326,7 +326,7 @@ function softwareDesk {
 
             # BROWSER ----------------------------------------------------------------------------
             'firefox'                    # Browser
-            'torbrowser-launcher'        # Onion Routing
+            'torbrowser-launcher'       # Onion Routing
 
             # COMMUNICATION ----------------------------------------------------------------------
             'thunderbird'               # Mail Client

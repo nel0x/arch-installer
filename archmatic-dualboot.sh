@@ -303,6 +303,7 @@ function softwareDesk {
    
             # DEVELOPMENT ------------------------------------------------------------------------
             'hugo'                      # Framework for creating light Webpages
+            'grub-customizer'           # Graphical grub2 settings manager
             'clang'                     # C Lang compiler
             'cmake'                     # Cross-platform open-source make system
             'electron'                  # Cross-platform development using Javascript

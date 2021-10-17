@@ -184,7 +184,7 @@ function baseInstall {
         # Copy the locale file to locale directory
         cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
         # Enable os-prober for detecting other OS
-        GRUB_DISABLE_OS_PROBER=false
+        echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
         # Generate GRUB's config file
         grub-mkconfig -o /boot/grub/grub.cfg
 

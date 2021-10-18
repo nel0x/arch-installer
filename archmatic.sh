@@ -258,6 +258,9 @@ function baseSetup {
         # Change compression settings for "$nproc" cores.
         sudo sed -i "s|COMPRESSXZ=(xz -c -z -)|COMPRESSXZ=(xz -c -T $(nproc) -z -)|g" /etc/makepkg.conf
 
+        # Parallel downloading (since pacman v6)
+        sed -i 's/^#Para/Para/' /etc/pacman.conf
+
         # Set hostname
         echo ${hostname} > /etc/hostname
 

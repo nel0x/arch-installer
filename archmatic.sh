@@ -540,6 +540,7 @@ function final {
 
         # Enable Bluetooth Service
         if [ "${bluetooth}" == "yes" ]; then
+            sed -i 's|#AutoEnable=false|AutoEnable=true|g' /etc/bluetooth/main.conf
             systemctl enable bluetooth
         fi
 

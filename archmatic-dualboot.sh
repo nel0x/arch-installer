@@ -89,9 +89,6 @@ function preinstall {
     echo -e "\nSelect your CPU: [amd/intel/vbox]"
     read ucode
 
-    echo -e "\nSelect desired filesystem: [ext4/btrfs]"
-    read filesystem
-
     # export environment variabels
     export disk
     export disk_boot
@@ -108,7 +105,6 @@ function preinstall {
     export bluetooth
     export wifi
     export ucode
-    export filesystem
 }
 
 function baseInstall {
@@ -131,18 +127,7 @@ function baseInstall {
 
     # Create filesystem
     mkfs.ext4 ${disk_boot}
-
-    ## Filesystem for root-volume
-    
-    ### EXT4
-    if [ "${filesystem}" == "ext4" ]; then
-        mkfs.ext4 /dev/vg0/lv_root
-    fi
-
-    ### BTRFS
-    if [ "${filesystem}" == "btrfs" ]; then
-        mkfs.btrfs /dev/vg0/lv_root
-    fi
+    mkfs.ext4 /dev/vg0/lv_root
 
     # Mount target
     mount /dev/vg0/lv_root /mnt

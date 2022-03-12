@@ -243,7 +243,7 @@ function baseSetup {
         printf "%b" "${user}:changeme" | chpasswd
 
         # Enable sudo-privileges for group "wheel"
-        sed -i "s|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|" /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL|" /etc/sudoers
 
         # Set-up 8GB swapfile
         if [ "${swap}" == "y" ]; then
@@ -476,7 +476,7 @@ function softwareDesk {
         ### AUR Set-up
             
         # Add sudo no-password privileges
-        sed -i "s|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|" /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL:ALL) NOPASSWD: ALL|%wheel ALL=(ALL:ALL) NOPASSWD: ALL|" /etc/sudoers
 
         su ${user}
 
@@ -540,7 +540,7 @@ function final {
         fi
 
         # Remove sudo no-password privileges
-        sudo sed -i "s|%wheel ALL=(ALL) NOPASSWD: ALL|# %wheel ALL=(ALL) NOPASSWD: ALL|g" /etc/sudoers
+        sudo sed -i "s|%wheel ALL=(ALL:ALL) NOPASSWD: ALL|# %wheel ALL=(ALL:ALL) NOPASSWD: ALL|g" /etc/sudoers
 CHROOT
 }
 

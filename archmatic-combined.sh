@@ -216,10 +216,10 @@ function baseSetup {
     arch-chroot /mnt /bin/bash <<"CHROOT"
 
         # Set locales
-        printf "%b" "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-        printf "%b" "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
+        printf "%b\n" "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+        printf "%b\n" "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
         locale-gen
-        printf "%b" "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
+        printf "%b\n" "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
 
         # Set time zone
         ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
@@ -233,10 +233,10 @@ function baseSetup {
         sed -i 's/^#Para/Para/' /etc/pacman.conf
 
         # Set hostname
-        printf "%b" ${hostname} > /etc/hostname
+        printf "%b\n" ${hostname} > /etc/hostname
 
         # Configure hosts file
-        printf "%b" "127.0.1.1 ${hostname}" >> /etc/hosts
+        printf "%b\n" "127.0.1.1 ${hostname}" >> /etc/hosts
 
         # Set-up user account
         useradd -m -G users,wheel -s /bin/bash ${user}

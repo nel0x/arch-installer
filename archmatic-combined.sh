@@ -11,9 +11,9 @@ function preinstall {
     efivar -l >/dev/null 2>&1
        
     if [[ $? -eq 0 ]]; then
-        echo "UEFI detected. Installation will go on."
+        printf "%b\n" "UEFI detected. Installation will go on."
     else
-        echo ="BIOS detected. This Installation Script is for UEFI only! Execution aborted."
+        printf "%b\n" "BIOS detected. This Installation Script is for UEFI only! Execution aborted."
         exit
     fi
 
@@ -21,9 +21,9 @@ function preinstall {
     ping -c3 archlinux.org
 
     if [ $? -eq 0 ]; then
-        echo "Internet connection detected. Installation will go on."
+        printf "%b\n" "Internet connection detected. Installation will go on."
     else
-        echo ="Internet connection failed. Execution aborted."
+        printf "%b\n" "Internet connection failed. Execution aborted."
         exit
     fi
 
@@ -35,13 +35,13 @@ function preinstall {
     reflector --verbose --country 'Germany' -l 5 -p https --sort rate --save /etc/pacman.d/mirrorlist
 
     # Prompts
-    echo -e "\nDo you multiboot: [y/N]"
+    printf "%b" "\nDo you multiboot: [y/N]"
     read pre_multiboot
     if [ "${pre_multiboot}" == "y" ]; then
-        echo "Be sure to manually set the disks & partitions in the shellscript\n Have you already done that? [y/N]"
+        printf "%b\n" "Be sure to manually set the disks & partitions in the shellscript.\n Have you already done that: [y/N]"
         read multiboot
         if [ "${multiboot}" == "y" ]; then
-            echo "Great! Installation will go on."
+            printf "%b\n" "Great! Installation will go on."
         else
             exit
         fi
@@ -49,7 +49,7 @@ function preinstall {
 
     # Define disk variables (EDIT MANUALLY FOR MULTIBOOT; and format those disks accordingly)
     lsblk
-    echo -e "\nEnter your drive: /dev/sda, /dev/nvme0n1, etc."
+    printf "%b\n" "\nEnter your drive: /dev/sda, /dev/nvme0n1, etc."
     read disk
 
     if [[ "${disk}" == "/dev/nvme0n"* ]]; then
@@ -66,55 +66,31 @@ function preinstall {
         disk_lvm_sed="${disk_lvm//\//\\\/}"
     fi
 
-    echo -e "\nSet hostname:"
+    printf "%b\n" "\nSet hostname:"
     read hostname
 
-    echo -e "\nSet ROOT password:"
-    read -s root_password
-
-    echo -e "\nVerify ROOT password:"
-    read -s root_password_confirm
-
-    # Check if both passwords match
-    if [ "${root_password}" != "${root_password_confirm}" ]; then
-        echo "Passwords do not match!"
-        exit
-    fi
-
-    echo -e "\nSet username:"
+    printf "%b\n" "\nSet username:"
     read user
 
-    echo -e "\nSet USER password:"
-    read -s user_password
-
-    echo -e "\nVerify USER password:"
-    read -s user_password_confirm
-
-    # Check if both passwords match
-    if [ "${user_password}" != "${user_password_confirm}" ]; then
-        echo "Passwords do not match!"
-        exit
-    fi
-
-    echo -e "\nInstall Desktop Environment: [gnome/kde/none]"
+    printf "%b\n" "\nInstall Desktop Environment: [gnome/kde/none]"
     read de
 
-    echo -e "\n8GB Swapfile: [y/N]"
+    printf "%b\n" "\n8GB Swapfile: [y/N]"
     read swap
 
-    echo -e "\nLaptop power management package: [y/N]"
+    printf "%b\n" "\nLaptop power management package: [y/N]"
     read laptop
 
-    echo -e "\nBluetooth packages: [y/N]"
+    printf "%b\n" "\nBluetooth packages: [y/N]"
     read bluetooth
 
-    echo -e "\nWi-Fi packages: [y/N]"
+    printf "%b\n" "\nWi-Fi packages: [y/N]"
     read wifi
 
-    echo -e "\nSelect your CPU: [amd/intel/vbox]"
+    printf "%b\n" "\nSelect your CPU: [amd/intel/vbox]"
     read ucode
 
-    echo -e "\nHow much GRUB-delay do you want on boot: [0-10]"
+    printf "%b\n" "\nHow much GRUB-delay do you want on boot: [0-10]"
     read grub_delay
 
     # export environment variabels
@@ -125,9 +101,7 @@ function preinstall {
     export disk_lvm
     export disk_lvm_sed
     export hostname
-    export root_password
     export user
-    export user_password
     export de
     export swap
     export laptop
@@ -207,7 +181,7 @@ function baseInstall {
         systemctl enable NetworkManager
         
         # Set root password
-        echo "root:${root_password}" | chpasswd
+        printf "%b" "root:changeme" | chpasswd
 
         ### Bootloader
         ## Set grub delay on boot
@@ -226,7 +200,7 @@ function baseInstall {
 
         # Enable os-prober for detecting other OS
         if [ "${multiboot}" == "y" ]; then
-            echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+            printf "%b" "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
         fi
 
         # Generate GRUB's config file
@@ -242,10 +216,10 @@ function baseSetup {
     arch-chroot /mnt /bin/bash <<"CHROOT"
 
         # Set locales
-        echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-        echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
+        printf "%b" "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+        printf "%b" "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
         locale-gen
-        echo "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
+        printf "%b" "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
 
         # Set time zone
         ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
@@ -259,14 +233,14 @@ function baseSetup {
         sed -i 's/^#Para/Para/' /etc/pacman.conf
 
         # Set hostname
-        echo ${hostname} > /etc/hostname
+        printf "%b" ${hostname} > /etc/hostname
 
         # Configure hosts file
-        echo "127.0.1.1 ${hostname}" >> /etc/hosts
+        printf "%b" "127.0.1.1 ${hostname}" >> /etc/hosts
 
         # Set-up user account
         useradd -m -G users,wheel -s /bin/bash ${user}
-        echo "${user}:${user_password}" | chpasswd
+        printf "%b" "${user}:changeme" | chpasswd
 
         # Enable sudo-privileges for group "wheel"
         sed -i 's|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|' /etc/sudoers
@@ -277,7 +251,7 @@ function baseSetup {
             chmod 600 /swapfile
             mkswap /swapfile
             swapon /swapfile
-            echo '/swapfile none swap defaults 0 0' >> /etc/fstab
+            printf "%b" "/swapfile none swap defaults 0 0" >> /etc/fstab
         fi
 
         # Install CPU Microcode files
@@ -560,7 +534,7 @@ function final {
         
         # Clean orphans pkg
         if [[ ! -n $(sudo pacman -Qdt) ]]; then
-            echo "No orphans to remove."
+            printf "%b\n" "No orphans to remove."
         else
             sudo pacman -Rns $(sudo pacman -Qdtq) --noconfirm
         fi
@@ -582,5 +556,5 @@ function main() {
 main
 
 umount -a
-echo -e "\nThe installation has finished. You can now boot into your new system."
+printf "%b\n" "\nThe installation has finished. You can now boot into your new system."
 exit

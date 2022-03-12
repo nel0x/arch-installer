@@ -200,7 +200,7 @@ function baseInstall {
 
         # Enable os-prober for detecting other OS
         if [ "${multiboot}" == "y" ]; then
-            printf "%b" "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+            printf "%b\n" "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
         fi
 
         # Generate GRUB's config file

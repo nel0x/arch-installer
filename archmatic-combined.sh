@@ -191,7 +191,7 @@ function baseInstall {
         sed -i -e "s|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=${disk_lvm_sed}:vg0:allow-discards loglevel=3\"|g" /etc/default/grub
 
         # Enable encrypted boot
-        sed -i -e 's|#GRUB_ENABLE_CRYPTODISK=y|GRUB_ENABLE_CRYPTODISK=y|g' /etc/default/grub
+        sed -i -e "s|#GRUB_ENABLE_CRYPTODISK=y|GRUB_ENABLE_CRYPTODISK=y|g" /etc/default/grub
 
         # Install grub
         grub-install --target=x86_64-efi --efi-directory=/boot/esp --bootloader-id=grub_uefi --recheck --debug
@@ -230,7 +230,7 @@ function baseSetup {
         sudo sed -i "s|COMPRESSXZ=(xz -c -z -)|COMPRESSXZ=(xz -c -T $(nproc) -z -)|g" /etc/makepkg.conf
 
         # Parallel downloading (since pacman v6)
-        sed -i 's/^#Para/Para/' /etc/pacman.conf
+        sed -i "s/^#Para/Para/" /etc/pacman.conf
 
         # Set hostname
         printf "%b\n" ${hostname} > /etc/hostname
@@ -243,7 +243,7 @@ function baseSetup {
         printf "%b" "${user}:changeme" | chpasswd
 
         # Enable sudo-privileges for group "wheel"
-        sed -i 's|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|' /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|" /etc/sudoers
 
         # Set-up 8GB swapfile
         if [ "${swap}" == "y" ]; then
@@ -476,7 +476,7 @@ function softwareDesk {
         ### AUR Set-up
             
         # Add sudo no-password privileges
-        sed -i 's|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|' /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|" /etc/sudoers
 
         su ${user}
 
@@ -511,7 +511,7 @@ function final {
 
         # Enable Bluetooth Service
         if [ "${bluetooth}" == "yes" ]; then
-            sed -i 's|#AutoEnable=false|AutoEnable=true|g' /etc/bluetooth/main.conf
+            sed -i "s|#AutoEnable=false|AutoEnable=true|g" /etc/bluetooth/main.conf
             systemctl enable bluetooth
         fi
 
@@ -540,7 +540,7 @@ function final {
         fi
 
         # Remove sudo no-password privileges
-        sudo sed -i 's|%wheel ALL=(ALL) NOPASSWD: ALL|# %wheel ALL=(ALL) NOPASSWD: ALL|g' /etc/sudoers
+        sudo sed -i "s|%wheel ALL=(ALL) NOPASSWD: ALL|# %wheel ALL=(ALL) NOPASSWD: ALL|g" /etc/sudoers
 CHROOT
 }
 

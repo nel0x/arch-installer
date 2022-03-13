@@ -7,24 +7,16 @@ Custom Arch Installation and Config Script
 ______________________________________________________________________________
 
 ## How to use
-
-### For single-boot
 ```
 cd arch-installer
 chmod +x archmatic.sh
 ./archmatic.sh
 ```
 
-### For dual-boot
-```
-cd arch-installer
-chmod +x archmatic-dualboot.sh
-```
-- Create a boot and a lvm partition.
-- Enter both and your esp under the `EDIT: Set partitions (manually)`-section into the script.
-```
-./archmatic-dualboot.sh
-```
+### For dual-boot first
+- create a boot and a lvm partition manually
+- then set both and your ESP under the `EDIT: Set partitions (manually)`-section in the script
+
 ______________________________________________________________________________
 ## Don't just run this script. Examine it. Customize it. Create your own version.
 ______________________________________________________________________________

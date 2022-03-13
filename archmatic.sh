@@ -35,7 +35,7 @@ function preinstall {
     reflector --verbose --country "Germany" -l 5 -p https --sort rate --save /etc/pacman.d/mirrorlist
 
     # Prompts
-    printf "%b" "\nDo you multiboot: [y/N]"
+    printf "\n%b\n" "Do you multiboot: [y/N]"
     read pre_multiboot
     if [ "${pre_multiboot}" == "y" ]; then
         printf "%b\n" "Be sure to manually set the disks & partitions in the shellscript.\n Have you already done that: [y/N]"
@@ -241,7 +241,7 @@ function baseSetup {
         printf "%b" "${user}:changeme" | chpasswd
 
         # Enable sudo-privileges for group "wheel"
-        sed -i "s|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|" /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL|" /etc/sudoers
 
         # Set-up 8GB swapfile
         if [[ "${swap}" == "y" ]]; then
@@ -477,7 +477,7 @@ function softwareDesk {
         ### AUR Set-up
             
         # Add sudo no-password privileges
-        sed -i "s|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|" /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL:ALL) NOPASSWD: ALL|%wheel ALL=(ALL:ALL) NOPASSWD: ALL|" /etc/sudoers
 
         su ${user}
 
@@ -542,7 +542,7 @@ function final {
         fi
 
         # Remove sudo no-password privileges
-        sudo sed -i "s|%wheel ALL=(ALL) NOPASSWD: ALL|# %wheel ALL=(ALL) NOPASSWD: ALL|" /etc/sudoers
+        sudo sed -i "s|%wheel ALL=(ALL:ALL) NOPASSWD: ALL|# %wheel ALL=(ALL:ALL) NOPASSWD: ALL|" /etc/sudoers
 CHROOT
 }
 

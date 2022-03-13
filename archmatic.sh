@@ -558,5 +558,6 @@ main
 
 # Unmount all partitions and exit script
 umount -a
-printf "%b\n" "\nThe installation has finished. You can now boot into your new system."
+printf "\n%b\n" "The installation has finished. You can now boot into your new system."
+printf "%b\n" "After that don't forget to change the password for root and your user. The default now is `changeme`"
 exit

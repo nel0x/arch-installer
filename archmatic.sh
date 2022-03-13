@@ -32,7 +32,7 @@ function preinstall {
     timedatectl status
 
     # Set-up mirrors for optimal download
-    reflector --verbose --country 'Germany' -l 5 -p https --sort rate --save /etc/pacman.d/mirrorlist
+    reflector --verbose --country "Germany" -l 5 -p https --sort rate --save /etc/pacman.d/mirrorlist
 
     # Prompts
     printf "%b" "\nDo you multiboot: [y/N]"
@@ -158,7 +158,7 @@ function baseInstall {
     mkfs.ext4 ${disk_boot}
     mkfs.ext4 /dev/vg0/lv_root
 
-    # Mount target
+    # Mount targets
     mount /dev/vg0/lv_root /mnt
     mkdir /mnt/boot
     mount ${disk_boot} /mnt/boot
@@ -169,10 +169,10 @@ function baseInstall {
     mkdir /mnt/etc
     genfstab -Up /mnt >> /mnt/etc/fstab
 
-    # Install basic packages
+    # Install most basic packages for minimal Arch environment
     pacstrap /mnt base base-devel linux linux-firmware linux-headers grub efibootmgr os-prober dosfstools mtools lvm2 --noconfirm --needed
 
-    # Install basic Networking tools
+    # Install basic networking tools
     pacstrap /mnt networkmanager --noconfirm --needed
 
     arch-chroot /mnt /bin/bash <<"CHROOT"
@@ -183,31 +183,31 @@ function baseInstall {
         # Set root password
         printf "%b" "root:changeme" | chpasswd
 
-        ### Bootloader
-        ## Set grub delay on boot
-        sed -i -e "s|GRUB_TIMEOUT=5|GRUB_TIMEOUT=${grub_delay}|g" /etc/default/grub
+        ### Bootloader: GRUB
+        ## Set delay on boot
+        sed -i -e "s|GRUB_TIMEOUT=5|GRUB_TIMEOUT=${grub_delay}|" /etc/default/grub
 
         # ${disk_lvm_sed} is needed because of the slashes in ${disk_lvm}, that need to be escaped
-        sed -i -e "s|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=${disk_lvm_sed}:vg0:allow-discards loglevel=3\"|g" /etc/default/grub
+        sed -i -e "s|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=${disk_lvm_sed}:vg0:allow-discards loglevel=3\"|" /etc/default/grub
 
-        # Enable encrypted boot
-        sed -i -e 's|#GRUB_ENABLE_CRYPTODISK=y|GRUB_ENABLE_CRYPTODISK=y|g' /etc/default/grub
+        # Enable boot from encrypted disk
+        sed -i -e "s|#GRUB_ENABLE_CRYPTODISK=y|GRUB_ENABLE_CRYPTODISK=y|" /etc/default/grub
 
-        # Install grub
+        # Install GRUB
         grub-install --target=x86_64-efi --efi-directory=/boot/esp --bootloader-id=grub_uefi --recheck --debug
         # Copy the locale file to locale directory
         cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
 
         # Enable os-prober for detecting other OS
         if [ "${multiboot}" == "y" ]; then
-            printf "%b\n" "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+            printf "\n%b" "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
         fi
 
-        # Generate GRUB's config file
+        # Generate GRUB's config
         grub-mkconfig -o /boot/grub/grub.cfg
 
-        # Update initial ramdisk
-        sed -i -e 's|HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)|HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)|g' /etc/mkinitcpio.conf
+        # Update initial ramdisk (mainly due to encryption & lvm)
+        sed -i -e "s|HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)|HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems keyboard fsck)|" /etc/mkinitcpio.conf
         mkinitcpio -p linux
 CHROOT
 }
@@ -216,49 +216,50 @@ function baseSetup {
     arch-chroot /mnt /bin/bash <<"CHROOT"
 
         # Set locales
-        printf "%b\n" "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-        printf "%b\n" "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
+        printf "\n%b" "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+        printf "\n%b" "de_DE.UTF-8 UTF-8" >> /etc/locale.gen
         locale-gen
-        printf "%b\n" "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
+        printf "\n%b" "LANG=de_DE.UTF-8 UTF-8" >> /etc/locale.conf
 
         # Set time zone
         ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
         # Specify cores for simultaneous compiling
-        sudo sed -i "s|#MAKEFLAGS=\"-j2\"|MAKEFLAGS=\"-j$(nproc)\"|g" /etc/makepkg.conf
+        sudo sed -i "s|#MAKEFLAGS=\"-j2\"|MAKEFLAGS=\"-j$(nproc)\"|" /etc/makepkg.conf
         # Change compression settings for "$nproc" cores.
-        sudo sed -i "s|COMPRESSXZ=(xz -c -z -)|COMPRESSXZ=(xz -c -T $(nproc) -z -)|g" /etc/makepkg.conf
+        sudo sed -i "s|COMPRESSXZ=(xz -c -z -)|COMPRESSXZ=(xz -c -T $(nproc) -z -)|" /etc/makepkg.conf
 
-        # Parallel downloading (since pacman v6)
-        sed -i 's/^#Para/Para/' /etc/pacman.conf
+        # Enable parallel downloading for pacman (since v6)
+        sed -i "s|^#Para|Para|" /etc/pacman.conf
 
-        # Set hostname
-        printf "%b\n" ${hostname} > /etc/hostname
-
-        # Configure hosts file
-        printf "%b\n" "127.0.1.1 ${hostname}" >> /etc/hosts
+        # Configure hostname
+        printf "%b" ${hostname} > /etc/hostname
+        printf "\n%b" "127.0.1.1 ${hostname}" >> /etc/hosts
 
         # Set-up user account
         useradd -m -G users,wheel -s /bin/bash ${user}
         printf "%b" "${user}:changeme" | chpasswd
 
         # Enable sudo-privileges for group "wheel"
-        sed -i 's|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|' /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|" /etc/sudoers
 
         # Set-up 8GB swapfile
-        if [ "${swap}" == "y" ]; then
+        if [[ "${swap}" == "y" ]]; then
             dd if=/dev/zero of=/swapfile bs=1M count=8192 status=progress
             chmod 600 /swapfile
             mkswap /swapfile
             swapon /swapfile
-            printf "%b" "/swapfile none swap defaults 0 0" >> /etc/fstab
+            printf "\n%b" "/swapfile none swap defaults 0 0" >> /etc/fstab
         fi
 
-        # Install CPU Microcode files
-        pacman -S ${ucode}-ucode --noconfirm --needed
+        # Install CPU Microcode files or VirtualBox Guest Additions
+        if [[ "${ucode}" == "vbox" ]]; then
+            pacman -S "virtualbox-guest-utils" --noconfirm --needed
+        else
+            pacman -S ${ucode}-ucode --noconfirm --needed
+        fi
 CHROOT
 }
-
 
 function softwareDesk {
     arch-chroot /mnt /bin/bash <<"CHROOT"
@@ -267,115 +268,115 @@ function softwareDesk {
         
         PKGS=(
             # DISPLAY RENDERING -------------------------------------------------------------
-            'xorg-drivers'              # Display Drivers
-            'xorg-xlsclients'           # Temp: Wayland Support
-            'xorg-xwayland'             # Temp: Wayland Support
-            'qt5-wayland'               # Temp: Wayland Support
-            'glfw-wayland'              # Temp: Wayland Support
-            'mesa'                      # Open source version of OpenGL
+            "xorg-drivers"              # Display Drivers
+            "xorg-xlsclients"           # Temp: Wayland Support
+            "xorg-xwayland"             # Temp: Wayland Support
+            "qt5-wayland"               # Temp: Wayland Support
+            "glfw-wayland"              # Temp: Wayland Support
+            "mesa"                      # Open source version of OpenGL
 
             # NETWORK SETUP ----------------------------------------------------------------------
-            'openvpn'                   # Open VPN support
-            'networkmanager-openvpn'    # Open VPN plugin for NM
-            'network-manager-applet'    # System tray icon/utility for network connectivity
+            "openvpn"                   # Open VPN support
+            "networkmanager-openvpn"    # Open VPN plugin for NM
+            "network-manager-applet"    # System tray icon/utility for network connectivity
 
             # AUDIO ------------------------------------------------------------------------------
-            'pipewire'                  # Temp: Pipewire Support
-            'pipewire-alsa'             # Temp: Pipewire Support
-            'pipewirde-pulse'           # Temp: Pipewire Support
-            'alsa-utils'                # Advanced Linux Sound Architecture (ALSA) Components https://alsa.opensrc.org/
-            #'alsa-plugins'             # ALSA plugins
-            #'pulseaudio'               # Pulse Audio sound components
-            #'pulseaudio-alsa'          # ALSA configuration for pulse audio
-            #'pavucontrol'              # Pulse Audio volume control
-            #'pnmixer'                  # System tray volume control
+            "pipewire"                  # Temp: Pipewire Support
+            "pipewire-alsa"             # Temp: Pipewire Support
+            "pipewirde-pulse"           # Temp: Pipewire Support
+            "alsa-utils"                # Advanced Linux Sound Architecture (ALSA) Components https://alsa.opensrc.org/
+            #"alsa-plugins"             # ALSA plugins
+            #"pulseaudio"               # Pulse Audio sound components
+            #"pulseaudio-alsa"          # ALSA configuration for pulse audio
+            #"pavucontrol"              # Pulse Audio volume control
+            #"pnmixer"                  # System tray volume control
 
             # PRINTERS ---------------------------------------------------------------------------
-            'cups'                      # Open source printer drivers
-            'cups-pdf'                  # PDF support for cups
-            'ghostscript'               # PostScript interpreter
-            'gsfonts'                   # Adobe Postscript replacement fonts
-            'hplip'                     # HP Drivers
-            'system-config-printer'     # Printer setup  utility
+            "cups"                      # Open source printer drivers
+            "cups-pdf"                  # PDF support for cups
+            "ghostscript"               # PostScript interpreter
+            "gsfonts"                   # Adobe Postscript replacement fonts
+            "hplip"                     # HP Drivers
+            "system-config-printer"     # Printer setup  utility
 
             # TERMINAL UTILITIES -----------------------------------------------------------------
-            'zsh'                       # ZSH shell
-            'zsh-completions'           # Tab completion for ZSH
-            'zsh-autosuggestions'       # History-based suggestions
-            'zsh-syntax-highlighting'   # ZSH Syntax highlighting
-            'cronie'                    # cron jobs
-            'curl'                      # Remote content retrieval
-            'wget'                      # Remote content retrieval
-            'htop'                      # Process viewer
-            'hardinfo'                  # Hardware info app
-            'neofetch'                  # Shows system info when you launch terminal
-            'numlockx'                  # Turns on numlock in X11
-            'openssh'                   # SSH connectivity tools
-            'p7zip'                     # 7z compression program
-            'rsync'                     # Remote file sync utility
-            'speedtest-cli'             # Internet speed via terminal
-            'unrar'                     # RAR compression program
-            'unzip'                     # Zip compression program
-            'vim'                       # Text Editor
-            'nano'                      # Text Editor
-            'reflector'                  # Tool for fetching latest mirrors
+            "zsh"                       # ZSH shell
+            "zsh-completions"           # Tab completion for ZSH
+            "zsh-autosuggestions"       # History-based suggestions
+            "zsh-syntax-highlighting"   # ZSH Syntax highlighting
+            "cronie"                    # cron jobs
+            "curl"                      # Remote content retrieval
+            "wget"                      # Remote content retrieval
+            "htop"                      # Process viewer
+            "hardinfo"                  # Hardware info app
+            "neofetch"                  # Shows system info when you launch terminal
+            "numlockx"                  # Turns on numlock in X11
+            "openssh"                   # SSH connectivity tools
+            "p7zip"                     # 7z compression program
+            "rsync"                     # Remote file sync utility
+            "speedtest-cli"             # Internet speed via terminal
+            "unrar"                     # RAR compression program
+            "unzip"                     # Zip compression program
+            "vim"                       # Text Editor
+            "nano"                      # Text Editor
+            "reflector"                  # Tool for fetching latest mirrors
 
             # DISK UTILITIES ---------------------------------------------------------------------
-            'android-tools'             # ADB for Android
-            'autofs'                    # Auto-mounter
-            'dosfstools'                # DOS Support
-            'exfat-utils'               # Mount exFat drives
-            'filezilla'                  # SSH File Transfer
-            'balena-etcher'             # Bootable USB Creator
+            "android-tools"             # ADB for Android
+            "autofs"                    # Auto-mounter
+            "dosfstools"                # DOS Support
+            "exfat-utils"               # Mount exFat drives
+            "filezilla"                  # SSH File Transfer
+            "balena-etcher"             # Bootable USB Creator
 
             # GENERAL UTILITIES ------------------------------------------------------------------
-            'freerdp'                   # RDP Connections
-            'libvncserver'              # VNC Connections
-            'remmina'                   # Remote Connection
-            'veracrypt'                 # Disc encryption utility
-            'keepassxc'                 # Password Manager
-            'syncthing'                 # Encrypted File Sync
-            'qbittorrent'               # Great Torrent Client
+            "freerdp"                   # RDP Connections
+            "libvncserver"              # VNC Connections
+            "remmina"                   # Remote Connection
+            "veracrypt"                 # Disc encryption utility
+            "keepassxc"                 # Password Manager
+            "syncthing"                 # Encrypted File Sync
+            "qbittorrent"               # Great Torrent Client
    
             # DEVELOPMENT ------------------------------------------------------------------------
-            'hugo'                      # Framework for creating light Webpages
-            'grub-customizer'           # Graphical grub2 settings manager
-            'clang'                     # C Lang compiler
-            'cmake'                     # Cross-platform open-source make system
-            'electron'                  # Cross-platform development using Javascript
-            'git'                       # Version control system
-            'gcc'                       # C/C++ compiler
-            'glibc'                     # C libraries
-            'meld'                      # File/directory comparison
-            'nodejs'                    # Javascript runtime environment
-            'npm'                       # Node package manager
-            'python'                    # Scripting language
-            'yarn'                      # Dependency management (Hyper needs this)
-            'go'                        # Import programming language
+            "hugo"                      # Framework for creating light Webpages
+            "grub-customizer"           # Graphical grub2 settings manager
+            "clang"                     # C Lang compiler
+            "cmake"                     # Cross-platform open-source make system
+            "electron"                  # Cross-platform development using Javascript
+            "git"                       # Version control system
+            "gcc"                       # C/C++ compiler
+            "glibc"                     # C libraries
+            "meld"                      # File/directory comparison
+            "nodejs"                    # Javascript runtime environment
+            "npm"                       # Node package manager
+            "python"                    # Scripting language
+            "yarn"                      # Dependency management (Hyper needs this)
+            "go"                        # Import programming language
 
             # MEDIA ------------------------------------------------------------------------------
-            'obs-studio'                # Record your screen
-            'vlc'                       # Video player
+            "obs-studio"                # Record your screen
+            "vlc"                       # Video player
 
             # GRAPHICS AND DESIGN ----------------------------------------------------------------
-            'gimp'                      # GNU Image Manipulation Program
-            'papirus-icon-theme'        # Papirus Icon Theme for KDE/GNOME
+            "gimp"                      # GNU Image Manipulation Program
+            "papirus-icon-theme"        # Papirus Icon Theme
 
             # BROWSER ----------------------------------------------------------------------------
-            'firefox'                    # Browser
-            'torbrowser-launcher'       # Onion Routing
+            "firefox"                   # Browser
+            "torbrowser-launcher"       # Onion Routing
 
             # COMMUNICATION ----------------------------------------------------------------------
-            'thunderbird'               # Mail Client
-            'element-desktop'           # Matrix Client for Communication
-            'signal-desktop'            # Signal Desktop Communication Client
-            'discord'                   # Not recommendable proprietary Communication System
+            "thunderbird"               # Mail Client
+            "element-desktop"           # Matrix Client for Communication
+            "signal-desktop"            # Signal Desktop Communication Client
+            "discord"                   # Not recommendable proprietary Communication System
 
             # OFFICE -----------------------------------------------------------------------------
-            'libreoffice'                 # Office Suite
+            "libreoffice"                 # Office Suite
         )
         for PKG in "${PKGS[@]}"; do
-        pacman -S ${PKG} --noconfirm --needed
+            pacman -S ${PKG} --noconfirm --needed
         done
             
             
@@ -383,116 +384,117 @@ function softwareDesk {
 
         ## KDE
             
-        if [ "${de}" == "kde" ]; then
+        if [[ "${de}" == "kde" ]]; then
             PKGS=(
-                # Plasma -----------------------------------------------------------------------------
-                'plasma-meta'               # Desktop Environment
-                'kde-applications-meta'     # KDE Applications
-                'plasma-wayland-session'    # Support for wayland session
-                'packagekit-qt5'            # Discover Back-end for standard arch repos
-                'xdg-user-dirs'             # Create user directories in Dolphin
-                'sddm'                      # Login Manager
+                # KDE --------------------------------------------------------------------------------
+                "plasma-meta"               # Desktop Environment
+                "kde-applications-meta"     # KDE Applications
+                "plasma-wayland-session"    # Support for wayland session
+                "packagekit-qt5"            # Discover Back-end for standard arch repos
+                "xdg-user-dirs"             # Create user directories in Dolphin
+                "sddm"                      # Login Manager
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
+                pacman -S ${PKG} --noconfirm --needed
             done
 
             PKGS=(               
                 # Remove unnecessary packages, that came as dependencies
-                'kde-education-meta'
-                'kde-games-meta'
-                'kde-multimedia-meta'
+                "kde-education-meta"
+                "kde-games-meta"
+                "kde-multimedia-meta"
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -R ${PKG} --noconfirm --needed
+                pacman -R ${PKG} --noconfirm --needed
             done
         fi
 
         ## GNOME
 
-        if [ "${de}" == "gnome" ]; then
+        if [[ "${de}" == "gnome" ]]; then
             PKGS=(
                 # GNOME --------------------------------------------------------------------------------
-                'gnome'                     # Desktop Environment
-                'gdm'                       # Login Manager
-                'gnome-tweaks'              # GNOME tweaking tool
-                'seahorse'                  # SSH/PGP management front-end
+                "gnome"                     # Desktop Environment
+                "gdm"                       # Login Manager
+                "gnome-tweaks"              # GNOME tweaking tool
+                "seahorse"                  # SSH/PGP management front-end
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
+                pacman -S ${PKG} --noconfirm --needed
             done
 
             PKGS=(
                 # Remove unnecessary packages, that came as dependencies
-                'epiphany'                     # GNOME Browser
+                "epiphany"                     # GNOME Browser
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
+                pacman -S ${PKG} --noconfirm --needed
             done
         fi
 
         ### Laptop power management
             
-        if [ "${laptop}" == "y" ]; then
+        if [[ "${laptop}" == "y" ]]; then
             PKGS=(
                 # OTHERS -----------------------------------------------------------------------------
-                'tlp'                       # Advanced laptop power management
+                "tlp"                       # Advanced laptop power management
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
+                pacman -S ${PKG} --noconfirm --needed
             done
         fi
 
         ### Bluetooth
 
-        if [ "${bluetooth}" == "y" ]; then
+        if [[ "${bluetooth}" == "y" ]]; then
             PKGS=(
                 # BLUETOOTH --------------------------------------------------------------------------
-                'bluez'                     # Daemons for the bluetooth protocol stack
-                'bluez-utils'               # Bluetooth development and debugging utilities
-                'bluez-firmware'            # Firmwares for Broadcom BCM203x and STLC2300 Bluetooth chips
-                'blueberry'                 # Bluetooth configuration tool
-                'pulseaudio-bluetooth'      # Bluetooth support for PulseAudio
+                "bluez"                     # Daemons for the bluetooth protocol stack
+                "bluez-utils"               # Bluetooth development and debugging utilities
+                "bluez-firmware"            # Firmwares for Broadcom BCM203x and STLC2300 Bluetooth chips
+                "blueberry"                 # Bluetooth configuration tool
+                "pulseaudio-bluetooth"      # Bluetooth support for PulseAudio
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
+                pacman -S ${PKG} --noconfirm --needed
             done
         fi
 
         ### Wi-Fi
 
-        if [ "${wifi}" == "y" ]; then
+        if [[ "${wifi}" == "y" ]]; then
             PKGS=(
                 # WIRELESS ---------------------------------------------------------------------------
-                'dialog'                    # Enables shell scripts to trigger dialog boxex
-                'wpa_supplicant'            # Key negotiation for WPA wireless networks
-                'wireless_tools'            # wireless tools
+                "dialog"                    # Enables shell scripts to trigger dialog boxex
+                "wpa_supplicant"            # Key negotiation for WPA wireless networks
+                "wireless_tools"            # wireless tools
             )
             for PKG in "${PKGS[@]}"; do
-            pacman -S ${PKG} --noconfirm --needed
+                pacman -S ${PKG} --noconfirm --needed
             done
         fi
 
         ### AUR Set-up
             
         # Add sudo no-password privileges
-        sed -i 's|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|' /etc/sudoers
+        sed -i "s|# %wheel ALL=(ALL) NOPASSWD: ALL|%wheel ALL=(ALL) NOPASSWD: ALL|" /etc/sudoers
 
         su ${user}
 
         # Install AUR Helper paru
-        cd /tmp && git clone "https://aur.archlinux.org/paru.git" && cd paru
-        makepkg -sric --noconfirm && cd
+        cd /tmp && git clone "https://aur.archlinux.org/paru.git" && cd paru && makepkg -sric --noconfirm && cd
+
+        # AUR packages
 
         PKGS=(
             # UTILITIES --------------------------------------------------------------------------
-            'timeshift'                 # Backup programm
-            'brave-bin'                 # Alternative chromium-based browser
-            'vscodium-bin'              # Binary VS Code without MS branding/telemetry
-            'scrcpy'                    # Android remot control tool
+            "timeshift"                 # Backup programm
+            "brave-bin"                 # Alternative chromium-based browser
+            "vscodium-bin"              # Binary VS Code without MS branding/telemetry
+            "scrcpy"                    # Android remot control tool
         )
         for PKG in "${PKGS[@]}"; do
-        paru -S ${PKG} --noconfirm --needed
+            paru -S ${PKG} --noconfirm --needed
         done
 CHROOT
 }
@@ -501,17 +503,17 @@ function final {
     arch-chroot /mnt /bin/bash <<"CHROOT"
 
         # Enable Login Manager
-        if [ "${de}" == "gnome" ]; then
+        if [[ "${de}" == "gnome" ]]; then
             systemctl enable gdm
         fi
 
-        if [ "${de}" == "kde" ]; then
+        if [[ "${de}" == "kde" ]]; then
             systemctl enable sddm
         fi
 
         # Enable Bluetooth Service
-        if [ "${bluetooth}" == "yes" ]; then
-            sed -i 's|#AutoEnable=false|AutoEnable=true|g' /etc/bluetooth/main.conf
+        if [[ "${bluetooth}" == "yes" ]]; then
+            sed -i "s|#AutoEnable=false|AutoEnable=true|" /etc/bluetooth/main.conf
             systemctl enable bluetooth
         fi
 
@@ -532,7 +534,7 @@ function final {
         # Install awesome terminal font for p10k
         mkdir -p /usr/local/share/fonts && cd /usr/local/share/fonts && wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
         
-        # Clean orphans pkg
+        # Clean orphan packages
         if [[ ! -n $(sudo pacman -Qdt) ]]; then
             printf "%b\n" "No orphans to remove."
         else
@@ -540,7 +542,7 @@ function final {
         fi
 
         # Remove sudo no-password privileges
-        sudo sed -i 's|%wheel ALL=(ALL) NOPASSWD: ALL|# %wheel ALL=(ALL) NOPASSWD: ALL|g' /etc/sudoers
+        sudo sed -i "s|%wheel ALL=(ALL) NOPASSWD: ALL|# %wheel ALL=(ALL) NOPASSWD: ALL|" /etc/sudoers
 CHROOT
 }
 
@@ -552,9 +554,9 @@ function main() {
     softwareDesk
     final
 }
-
 main
 
+# Unmount all partitions and exit script
 umount -a
 printf "%b\n" "\nThe installation has finished. You can now boot into your new system."
 exit

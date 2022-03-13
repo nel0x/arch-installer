@@ -532,7 +532,7 @@ function final {
         # change shell to zsh
         sudo chsh -s /bin/zsh ${user}
         # Install awesome terminal font for p10k
-        mkdir -p /usr/local/share/fonts && cd /usr/local/share/fonts && wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+        sudo mkdir -p /usr/local/share/fonts && cd /usr/local/share/fonts && sudo wget https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
         
         # Clean orphan packages
         if [[ ! -n $(sudo pacman -Qdt) ]]; then

@@ -541,6 +541,10 @@ function final {
             sudo pacman -Rns $(sudo pacman -Qdtq) --noconfirm
         fi
 
+        # Set own user & root passwords
+        passwd ${user}
+        sudo passwd root
+
         # Remove sudo no-password privileges
         sudo sed -i "s|%wheel ALL=(ALL:ALL) NOPASSWD: ALL|# %wheel ALL=(ALL:ALL) NOPASSWD: ALL|" /etc/sudoers
 CHROOT
@@ -559,5 +563,4 @@ main
 # Unmount all partitions and exit script
 umount -a
 printf "\n%b\n" "The installation has finished. You can now boot into your new system."
-printf "%b\n" "After that don't forget to change the password for root and your user. The default now is `changeme`"
 exit

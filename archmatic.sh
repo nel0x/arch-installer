@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 #-------------------------------------------------------------------------
-#   Maintainer: Nelox
+#   Maintainer: nel0x
 #   Description: Custom Arch Installation and Config Script
 #   License: GPLv3
 #-------------------------------------------------------------------------

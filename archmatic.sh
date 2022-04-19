@@ -547,7 +547,7 @@ function final {
         ### Set-up ZSH
         su ${user}
         # Fetch zsh config
-        wget https://gitlab.com/Nelox/zsh/-/raw/master/.zshrc -O ~/.zshrc
+        wget https://raw.githubusercontent.com/nel0x/zsh-config/master/.zshrc -O ~/.zshrc
         # Get Powerlevel0k Prompt
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
         # change shell to zsh

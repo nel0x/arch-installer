@@ -318,14 +318,14 @@ function softwareDesk {
             "unzip"                     # Zip compression program
             "vim"                       # Text Editor
             "nano"                      # Text Editor
-            "reflector"                  # Tool for fetching latest mirrors
+            "reflector"                 # Tool for fetching latest mirrors
 
             # DISK UTILITIES ---------------------------------------------------------------------
             "android-tools"             # ADB for Android
             "autofs"                    # Auto-mounter
             "dosfstools"                # DOS Support
             "exfat-utils"               # Mount exFat drives
-            "filezilla"                  # SSH File Transfer
+            "filezilla"                 # SSH File Transfer
             "balena-etcher"             # Bootable USB Creator
 
             # GENERAL UTILITIES ------------------------------------------------------------------
@@ -336,6 +336,7 @@ function softwareDesk {
             "keepassxc"                 # Password Manager
             "syncthing"                 # Encrypted File Sync
             "qbittorrent"               # Great Torrent Client
+            "flatpak"                   # Containerized App distribution
    
             # DEVELOPMENT ------------------------------------------------------------------------
             "hugo"                      # Framework for creating light Webpages
@@ -367,7 +368,7 @@ function softwareDesk {
 
             # COMMUNICATION ----------------------------------------------------------------------
             "thunderbird"               # Mail Client
-            "element-desktop"           # Matrix Client for Communication
+            #"element-desktop"           # Matrix Client for Communication      # testwise removed for flatpak
             "signal-desktop"            # Signal Desktop Communication Client
             "discord"                   # Not recommendable proprietary Communication System
 
@@ -491,6 +492,12 @@ function softwareDesk {
             "brave-bin"                 # Alternative chromium-based browser
             "vscodium-bin"              # Binary VS Code without MS branding/telemetry
             "scrcpy"                    # Android remot control tool
+        )
+        
+        # Flatpak packages
+
+        PKGS=(
+            "im.riot.Riot"
         )
         for PKG in "${PKGS[@]}"; do
             paru -S ${PKG} --noconfirm --needed

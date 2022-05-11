@@ -548,7 +548,7 @@ function final {
         fi
 
         # Set own user & root passwords
-        passwd ${user}
+        sudo passwd ${user}
         sudo passwd root
 
         # Remove sudo no-password privileges

@@ -547,10 +547,6 @@ function final {
             sudo pacman -Rns $(sudo pacman -Qdtq) --noconfirm
         fi
 
-        # Set own user & root passwords
-        sudo passwd ${user}
-        sudo passwd root
-
         # Remove sudo no-password privileges
         sudo sed -i "s|%wheel ALL=(ALL:ALL) NOPASSWD: ALL|# %wheel ALL=(ALL:ALL) NOPASSWD: ALL|" /etc/sudoers
 CHROOT

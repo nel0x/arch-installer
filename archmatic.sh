@@ -491,7 +491,7 @@ function softwareDesk {
             "timeshift"                 # Backup programm
             "brave-bin"                 # Alternative chromium-based browser
             "vscodium-bin"              # Binary VS Code without MS branding/telemetry
-            "scrcpy"                    # Android remot control tool
+            "guiscrcpy-git"             # Android remot control tool
         )
         
         # Flatpak packages

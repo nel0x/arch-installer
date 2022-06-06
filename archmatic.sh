@@ -336,7 +336,7 @@ function softwareDesk {
             "keepassxc"                 # Password Manager
             "syncthing"                 # Encrypted File Sync
             "qbittorrent"               # Great Torrent Client
-            "flatpak"                   # Containerized App distribution
+            "flatpak"                    # Containerized App distribution
    
             # DEVELOPMENT ------------------------------------------------------------------------
             "hugo"                      # Framework for creating light Webpages
@@ -493,6 +493,9 @@ function softwareDesk {
             "vscodium-bin"              # Binary VS Code without MS branding/telemetry
             "guiscrcpy-git"             # Android remot control tool
         )
+        for PKG in "${PKGS[@]}"; do
+            paru -S ${PKG} --noconfirm --needed
+        done
         
         # Flatpak packages
 
@@ -500,7 +503,7 @@ function softwareDesk {
             "im.riot.Riot"
         )
         for PKG in "${PKGS[@]}"; do
-            paru -S ${PKG} --noconfirm --needed
+            flatpak install -y ${PKG}
         done
 CHROOT
 }

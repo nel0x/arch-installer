@@ -488,7 +488,7 @@ function softwareDesk {
 
         PKGS=(
             # UTILITIES --------------------------------------------------------------------------
-            "timeshift"                 # Backup programm
+            "timeshift-bin"                 # Backup programm
             "brave-bin"                 # Alternative chromium-based browser
             "vscodium-bin"              # Binary VS Code without MS branding/telemetry
             "guiscrcpy-git"             # Android remot control tool

@@ -474,6 +474,15 @@ function softwareDesk {
             done
         fi
 
+        # Flatpak packages
+
+        PKGS=(
+            "im.riot.Riot"
+        )
+        for PKG in "${PKGS[@]}"; do
+            flatpak install -y ${PKG}
+        done
+
         ### AUR Set-up
             
         # Add sudo no-password privileges
@@ -495,15 +504,6 @@ function softwareDesk {
         )
         for PKG in "${PKGS[@]}"; do
             paru -S ${PKG} --noconfirm --needed
-        done
-        
-        # Flatpak packages
-
-        PKGS=(
-            "im.riot.Riot"
-        )
-        for PKG in "${PKGS[@]}"; do
-            flatpak install -y ${PKG}
         done
 CHROOT
 }

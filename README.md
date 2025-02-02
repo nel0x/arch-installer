@@ -15,7 +15,7 @@ chmod +x archmatic.sh
 ./archmatic.sh
 ```
 
-### For dual-boot first
+### For dual-booting first
 - create a boot and a lvm partition manually
 - then set both and your ESP under the `EDIT: Set partitions (manually)`-section in the script
 
